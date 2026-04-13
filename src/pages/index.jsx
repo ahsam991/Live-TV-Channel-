@@ -14,6 +14,7 @@ import CategoryFilter from '../components/CategoryFilter';
 import SearchBar from '../components/SearchBar';
 import SourceSwitcher from '../components/SourceSwitcher';
 import BD_CHANNELS, { getBDCategories } from '../data/bdChannels';
+import HEXA_CHANNELS, { getHexaCategories } from '../data/hexaChannels';
 
 // Dynamic imports for client-only components
 const Player = dynamic(() => import('../components/Player'), { ssr: false });
@@ -59,19 +60,24 @@ export default function Home() {
   }, [theme]);
 
   // ── Resolve channels & categories for active source ──────────────────────
-  const bdCategories = useMemo(() => getBDCategories(), []);
+  const bdCategories   = useMemo(() => getBDCategories(), []);
+  const hexaCategories = useMemo(() => getHexaCategories(), []);
 
   const channels   = source === 'biostar' ? biostarChannels
                    : source === 'bd'      ? BD_CHANNELS
+                   : source === 'hexa'    ? HEXA_CHANNELS
                    : iptvChannels;
   const categories = source === 'biostar' ? biostarCategories
                    : source === 'bd'      ? bdCategories
+                   : source === 'hexa'    ? hexaCategories
                    : iptvCategories;
   const loading    = source === 'biostar' ? biostarLoading
-                   : source === 'bd'      ? false          // static — instant
+                   : source === 'bd'      ? false
+                   : source === 'hexa'    ? false
                    : iptvLoading;
   const error      = source === 'biostar' ? biostarError
                    : source === 'bd'      ? null
+                   : source === 'hexa'    ? null
                    : iptvError;
 
   // Filtered channels
@@ -159,6 +165,14 @@ export default function Home() {
           </div>
         )}
 
+        {source === 'hexa' && (
+          <div className="px-4 py-1.5 border-b border-gray-800 flex items-center gap-2 flex-shrink-0"
+            style={{ background: 'linear-gradient(90deg,rgba(251,146,60,0.12),rgba(239,68,68,0.07))' }}>
+            <span className="text-xs font-semibold" style={{ color: '#fb923c' }}>🔥 HEXA PRO</span>
+            <span className="text-xs text-gray-500">— {HEXA_CHANNELS.length} channels · by ABU SAEEiD × Rifaz</span>
+          </div>
+        )}
+
         {source === 'biostar' && !error && (
           <div className="px-4 py-1.5 border-b border-gray-800 flex items-center gap-2 flex-shrink-0"
             style={{ background: 'linear-gradient(90deg,rgba(108,99,255,0.12),rgba(168,85,247,0.08))' }}>
@@ -204,6 +218,9 @@ export default function Home() {
                     )}
                     {source === 'biostar' && (
                       <span className="px-1.5 py-0.5 rounded text-xs font-bold" style={{ background: 'rgba(108,99,255,0.2)', color: '#a78bfa' }}>BIOSTAR</span>
+                    )}
+                    {source === 'hexa' && (
+                      <span className="px-1.5 py-0.5 rounded text-xs font-bold" style={{ background: 'rgba(251,146,60,0.2)', color: '#fb923c' }}>HEXA PRO</span>
                     )}
                   </p>
                 </div>

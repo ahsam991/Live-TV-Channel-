@@ -1,6 +1,6 @@
 /**
  * SourceSwitcher.jsx
- * Toggle between IPTV, BD Live, and Biostar sources.
+ * Toggle between IPTV, BD Live, Biostar, and HEXA PRO sources.
  */
 
 export default function SourceSwitcher({ source, onSwitch }) {
@@ -8,6 +8,7 @@ export default function SourceSwitcher({ source, onSwitch }) {
     { id: 'iptv',    label: '📡 IPTV' },
     { id: 'bd',      label: '🇧🇩 BD Live' },
     { id: 'biostar', label: '⭐ Biostar' },
+    { id: 'hexa',    label: '🔥 HEXA PRO' },
   ];
 
   return (
