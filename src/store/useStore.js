@@ -13,9 +13,13 @@ export const useStore = create(
       currentChannel: null,
       setCurrentChannel: (channel) => set({ currentChannel: channel }),
 
-      // Active source: 'iptv' | 'biostar'
+      // Active source: 'iptv' | 'biostar' | 'bd' | 'hexa' | 'tsports' | 'sunplex' | 'toffee'
       source: 'iptv',
       setSource: (src) => set({ source: src, currentChannel: null }),
+
+      // Geo Proxy Toggle
+      useGeoProxy: false,
+      toggleGeoProxy: () => set((s) => ({ useGeoProxy: !s.useGeoProxy })),
 
       // Favorites — stored as Set of URLs (serialized as array)
       favorites: [],

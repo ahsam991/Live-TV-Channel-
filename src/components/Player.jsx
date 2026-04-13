@@ -14,7 +14,7 @@ function isBiostarUrl(url) {
 export default function Player() {
   const videoRef = useRef(null);
   const hlsRef = useRef(null);
-  const { currentChannel, setPlayerError, clearPlayerError, playerError } = useStore();
+  const { currentChannel, setPlayerError, clearPlayerError, playerError, useGeoProxy, toggleGeoProxy } = useStore();
   const [loading, setLoading] = useState(false);
   const [retrying, setRetrying] = useState(false);
 
@@ -35,11 +35,14 @@ export default function Player() {
     let playUrl = currentChannel.url;
     if (currentChannel.cookie) {
       playUrl = `/api/toffee?url=${encodeURIComponent(currentChannel.url)}&cookie=${encodeURIComponent(currentChannel.cookie)}`;
+    } else if (useGeoProxy && !playUrl.includes('172.') && !playUrl.includes('localhost') && !playUrl.includes('127.0.0.1')) {
+      // Route through generic Cloud proxy to bypass CORS / Geo-blocks
+      playUrl = `/api/proxy?url=${encodeURIComponent(currentChannel.url)}`;
     }
 
     initPlayer(playUrl, currentChannel);
     return () => destroyHls();
-  }, [currentChannel]);
+  }, [currentChannel, useGeoProxy]);
 
   function destroyHls() {
     if (hlsRef.current) {
@@ -127,6 +130,8 @@ export default function Player() {
       let playUrl = currentChannel.url;
       if (currentChannel.cookie) {
         playUrl = `/api/toffee?url=${encodeURIComponent(currentChannel.url)}&cookie=${encodeURIComponent(currentChannel.cookie)}`;
+      } else if (useGeoProxy) {
+        playUrl = `/api/proxy?url=${encodeURIComponent(currentChannel.url)}`;
       }
       initPlayer(playUrl, currentChannel);
     }, 500);
@@ -167,6 +172,23 @@ export default function Player() {
         autoPlay
         playsInline
       />
+      
+      {/* Geo-Proxy Overlay Badge (Only show if a channel is selected and it's not a local stream) */}
+      {currentChannel && !currentChannel.cookie && (
+        <div className="absolute top-4 right-4 z-20 opacity-0 hover:opacity-100 transition-opacity duration-300">
+          <button
+            onClick={toggleGeoProxy}
+            title={useGeoProxy ? "Click to disable Geo-Proxy" : "Click to enable Cloud Proxy (Fixes Geo/CORS Blocks)"}
+            className={`px-3 py-1.5 text-xs font-bold rounded shadow-lg backdrop-blur transition border ${
+              useGeoProxy
+                ? 'bg-emerald-500/80 text-white border-emerald-400'
+                : 'bg-black/60 text-white hover:bg-black/80 border-white/20'
+            }`}
+          >
+            {useGeoProxy ? '🌐 Geo-Proxy: ON' : '🌐 Geo-Proxy: OFF'}
+          </button>
+        </div>
+      )}
 
       {/* Empty state */}
       {!currentChannel && (
