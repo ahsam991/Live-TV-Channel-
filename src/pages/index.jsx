@@ -18,6 +18,7 @@ import SourceSwitcher from '../components/SourceSwitcher';
 import BD_CHANNELS, { getBDCategories } from '../data/bdChannels';
 import HEXA_CHANNELS, { getHexaCategories } from '../data/hexaChannels';
 import { TOFFEE_CHANNELS } from '../data/toffeeChannels';
+import JAGO_CHANNELS, { getJagoCategories } from '../data/jagoChannels';
 
 // Dynamic imports for client-only components
 const Player = dynamic(() => import('../components/Player'), { ssr: false });
@@ -25,6 +26,7 @@ const ChannelList = dynamic(() => import('../components/ChannelList'), { ssr: fa
 
 // Static categories
 const toffeeCategories = [...new Set(TOFFEE_CHANNELS.map(c => c.group))];
+const jagoCategories = getJagoCategories();
 
 export default function Home() {
   const { channels: iptvChannels, categories: iptvCategories, loading: iptvLoading, error: iptvError, status } = usePlaylist();
@@ -75,6 +77,7 @@ export default function Home() {
                    : source === 'bd'      ? BD_CHANNELS
                    : source === 'hexa'    ? HEXA_CHANNELS
                    : source === 'toffee'  ? TOFFEE_CHANNELS
+                   : source === 'jago'    ? JAGO_CHANNELS
                    : source === 'tsports' ? tSportsChannels
                    : source === 'sunplex' ? sunplexChannels
                    : iptvChannels;
@@ -82,6 +85,7 @@ export default function Home() {
                    : source === 'bd'      ? bdCategories
                    : source === 'hexa'    ? hexaCategories
                    : source === 'toffee'  ? toffeeCategories
+                   : source === 'jago'    ? jagoCategories
                    : source === 'tsports' ? tSportsCategories
                    : source === 'sunplex' ? sunplexCategories
                    : iptvCategories;
@@ -89,6 +93,7 @@ export default function Home() {
                    : source === 'bd'      ? false
                    : source === 'hexa'    ? false
                    : source === 'toffee'  ? false
+                   : source === 'jago'    ? false
                    : source === 'tsports' ? tSportsLoading
                    : source === 'sunplex' ? sunplexLoading
                    : iptvLoading;
@@ -96,6 +101,7 @@ export default function Home() {
                    : source === 'bd'      ? null
                    : source === 'hexa'    ? null
                    : source === 'toffee'  ? null
+                   : source === 'jago'    ? null
                    : source === 'tsports' ? tSportsError
                    : source === 'sunplex' ? sunplexError
                    : iptvError;

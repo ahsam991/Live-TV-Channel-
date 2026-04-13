@@ -12,6 +12,7 @@ export default function SourceSwitcher({ source, onSwitch }) {
     { id: 'tsports', label: '🏏 T-Sports' },
     { id: 'sunplex', label: '☀️ Sunplex' },
     { id: 'toffee',  label: '🍬 Toffee' },
+    { id: 'jago',    label: '🎥 Jago BD' },
   ];
 
   return (

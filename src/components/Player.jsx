@@ -35,6 +35,8 @@ export default function Player() {
     let playUrl = currentChannel.url;
     if (currentChannel.cookie) {
       playUrl = `/api/toffee?url=${encodeURIComponent(currentChannel.url)}&cookie=${encodeURIComponent(currentChannel.cookie)}`;
+    } else if (currentChannel.group === 'JagoBD') {
+      playUrl = `/api/jago?url=${encodeURIComponent(currentChannel.url)}`;
     } else if (useGeoProxy && !playUrl.includes('172.') && !playUrl.includes('localhost') && !playUrl.includes('127.0.0.1')) {
       // Route through generic Cloud proxy to bypass CORS / Geo-blocks
       playUrl = `/api/proxy?url=${encodeURIComponent(currentChannel.url)}`;
@@ -130,6 +132,8 @@ export default function Player() {
       let playUrl = currentChannel.url;
       if (currentChannel.cookie) {
         playUrl = `/api/toffee?url=${encodeURIComponent(currentChannel.url)}&cookie=${encodeURIComponent(currentChannel.cookie)}`;
+      } else if (currentChannel.group === 'JagoBD') {
+        playUrl = `/api/jago?url=${encodeURIComponent(currentChannel.url)}`;
       } else if (useGeoProxy) {
         playUrl = `/api/proxy?url=${encodeURIComponent(currentChannel.url)}`;
       }
