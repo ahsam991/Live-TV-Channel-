@@ -104,15 +104,21 @@ export default function Home() {
     const label = source === 'biostar' ? '⭐ Biostar' : '📺 StreamFlow';
     const sub   = source === 'biostar' ? 'Loading Biostar channels...' : 'IPTV Web Player';
     return (
-      <div className="fixed inset-0 bg-gray-950 flex flex-col items-center justify-center">
-        <div className="text-3xl font-black mb-2" style={{ background: 'linear-gradient(135deg,#6c63ff,#ff6584)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-          {label}
+      <div className="fixed inset-0 bg-[#030712] flex flex-col items-center justify-center overflow-hidden z-50">
+        {/* Animated background blobs for loader */}
+        <div className="absolute top-[20%] left-[30%] w-96 h-96 bg-purple-600/20 rounded-full blur-[100px] animate-pulse" />
+        <div className="absolute bottom-[20%] right-[30%] w-96 h-96 bg-pink-600/20 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '1s'}} />
+        
+        <div className="relative z-10 flex flex-col items-center">
+          <div className="text-4xl font-extrabold mb-3 tracking-tight drop-shadow-xl text-gradient">
+            {label}
+          </div>
+          <p className="text-gray-400 font-medium mb-8 uppercase tracking-widest text-sm drop-shadow-md">{sub}</p>
+          <div className="w-64 h-1.5 bg-gray-800/80 rounded-full overflow-hidden shadow-inner">
+            <div className="h-full rounded-full animate-pulse bg-gradient-to-r from-purple-500 via-pink-500 to-red-500" style={{ width: '60%' }} />
+          </div>
+          {source === 'iptv' && <p className="text-gray-600 text-xs mt-4 font-mono">{status}</p>}
         </div>
-        <p className="text-gray-500 text-sm mb-6">{sub}</p>
-        <div className="w-48 h-1 bg-gray-800 rounded-full overflow-hidden">
-          <div className="h-full rounded-full animate-pulse" style={{ background: 'linear-gradient(90deg,#6c63ff,#ff6584)', width: '60%' }} />
-        </div>
-        {source === 'iptv' && <p className="text-gray-600 text-xs mt-3">{status}</p>}
       </div>
     );
   }
@@ -125,25 +131,36 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      <div className="flex flex-col h-screen bg-gray-950 text-gray-100 overflow-hidden">
+      <div className="relative flex flex-col h-screen bg-[#030712] text-gray-100 overflow-hidden font-sans">
+        
+        {/* --- Global Background glow blobs --- */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
+          <div className="absolute -top-64 -left-64 w-[500px] h-[500px] bg-purple-900/10 rounded-full blur-[120px]" />
+          <div className="absolute top-1/2 right-0 w-[600px] h-[600px] bg-pink-900/10 rounded-full blur-[150px] -translate-y-1/2" />
+        </div>
 
         {/* Header */}
-        <header className="flex items-center gap-3 px-4 py-2.5 border-b border-gray-800 bg-gray-900 flex-shrink-0">
-          <div className="flex items-center gap-2 text-sm font-bold flex-shrink-0">
-            <span className="w-7 h-7 rounded-lg flex items-center justify-center text-sm" style={{ background: 'linear-gradient(135deg,#6c63ff,#ff6584)' }}>📺</span>
-            StreamFlow
+        <header className="relative z-20 flex items-center gap-4 px-6 py-3 border-b border-white/5 glass-panel flex-shrink-0 shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
+          <div className="flex items-center gap-3 text-lg font-extrabold tracking-tight flex-shrink-0">
+            <span className="w-9 h-9 rounded-xl flex items-center justify-center text-lg shadow-[0_0_15px_rgba(168,85,247,0.5)] bg-gradient-to-br from-purple-500 to-pink-500">
+              <span className="drop-shadow-md">📺</span>
+            </span>
+            <span className="text-gradient">StreamFlow</span>
           </div>
 
           {/* Source switcher */}
-          <SourceSwitcher source={source} onSwitch={setSource} />
+          <div className="ml-4">
+            <SourceSwitcher source={source} onSwitch={setSource} />
+          </div>
 
           <SearchBar value={search} onChange={setSearch} />
 
-          <div className="flex items-center gap-2 ml-auto text-xs text-gray-500 flex-shrink-0">
-            <span>{filtered.length} ch</span>
+          <div className="flex items-center gap-3 ml-auto text-sm text-gray-500 flex-shrink-0 font-medium">
+            <span className="bg-white/5 px-3 py-1 rounded-full border border-white/10 shadow-inner">{filtered.length} CH</span>
             <button
               onClick={toggleTheme}
-              className="px-2 py-1 rounded bg-gray-800 border border-gray-700 text-gray-400 hover:text-gray-200 transition-colors"
+              className="w-10 h-10 rounded-full glass-panel flex items-center justify-center hover:bg-white/10 transition-colors shadow-sm"
+              title="Toggle Theme"
             >
               {theme === 'dark' ? '☀️' : '🌙'}
             </button>
@@ -152,40 +169,40 @@ export default function Home() {
 
         {/* Error / info banner */}
         {error && (
-          <div className="px-4 py-2 bg-red-950 border-b border-red-900 text-red-400 text-xs flex items-center gap-2 flex-shrink-0">
-            ⚠️ {error}
+          <div className="relative z-20 px-6 py-2.5 bg-red-950/80 backdrop-blur-md border-b border-red-900/50 text-red-300 text-sm font-medium flex items-center gap-3 flex-shrink-0">
+            <span className="text-lg shadow-sm">⚠️</span> {error}
           </div>
         )}
 
         {source === 'bd' && (
-          <div className="px-4 py-1.5 border-b border-gray-800 flex items-center gap-2 flex-shrink-0"
-            style={{ background: 'linear-gradient(90deg,rgba(34,197,94,0.1),rgba(16,185,129,0.06))' }}>
-            <span className="text-xs font-semibold" style={{ color: '#34d399' }}>🇧🇩 BD Live</span>
-            <span className="text-xs text-gray-500">— {BD_CHANNELS.length} channels · direct HLS streams</span>
+          <div className="relative z-20 px-6 py-2 border-b border-white/5 flex items-center gap-3 flex-shrink-0 shadow-sm"
+            style={{ background: 'linear-gradient(90deg, rgba(34,197,94,0.15), rgba(16,185,129,0.05))' }}>
+            <span className="text-sm font-bold tracking-wide" style={{ color: '#34d399', textShadow: '0 0 10px rgba(52,211,153,0.4)' }}>🇧🇩 BD Live</span>
+            <span className="text-sm text-gray-400/90 font-medium">— {BD_CHANNELS.length} channels · Direct HLS streams</span>
           </div>
         )}
 
         {source === 'hexa' && (
-          <div className="px-4 py-1.5 border-b border-gray-800 flex items-center gap-2 flex-shrink-0"
-            style={{ background: 'linear-gradient(90deg,rgba(251,146,60,0.12),rgba(239,68,68,0.07))' }}>
-            <span className="text-xs font-semibold" style={{ color: '#fb923c' }}>🔥 HEXA PRO</span>
-            <span className="text-xs text-gray-500">— {HEXA_CHANNELS.length} channels · by ABU SAEEiD × Rifaz</span>
+          <div className="relative z-20 px-6 py-2 border-b border-white/5 flex items-center gap-3 flex-shrink-0 shadow-sm"
+            style={{ background: 'linear-gradient(90deg, rgba(251,146,60,0.15), rgba(239,68,68,0.05))' }}>
+            <span className="text-sm font-bold tracking-wide" style={{ color: '#fb923c', textShadow: '0 0 10px rgba(251,146,60,0.4)' }}>🔥 HEXA PRO</span>
+            <span className="text-sm text-gray-400/90 font-medium">— {HEXA_CHANNELS.length} channels · by ABU SAEEiD × Rifaz</span>
           </div>
         )}
 
         {source === 'biostar' && !error && (
-          <div className="px-4 py-1.5 border-b border-gray-800 flex items-center gap-2 flex-shrink-0"
-            style={{ background: 'linear-gradient(90deg,rgba(108,99,255,0.12),rgba(168,85,247,0.08))' }}>
-            <span className="text-xs font-semibold" style={{ color: '#a78bfa' }}>⭐ Biostar</span>
-            <span className="text-xs text-gray-500">— {channels.length} channels · live from GitHub</span>
+          <div className="relative z-20 px-6 py-2 border-b border-white/5 flex items-center gap-3 flex-shrink-0 shadow-sm"
+            style={{ background: 'linear-gradient(90deg, rgba(168,85,247,0.15), rgba(236,72,153,0.05))' }}>
+            <span className="text-sm font-bold tracking-wide text-gradient">⭐ Biostar</span>
+            <span className="text-sm text-gray-400/90 font-medium">— {channels.length} channels · Live from GitHub</span>
           </div>
         )}
 
         {/* Main content */}
-        <div className="flex flex-1 overflow-hidden">
+        <div className="relative z-10 flex flex-1 overflow-hidden">
 
           {/* Sidebar */}
-          <aside className="w-64 sm:w-72 flex flex-col border-r border-gray-800 bg-gray-900 flex-shrink-0">
+          <aside className="w-80 flex flex-col border-r border-white/5 bg-black/40 backdrop-blur-xl flex-shrink-0 shadow-[4px_0_24px_rgba(0,0,0,0.3)]">
             <CategoryFilter
               categories={categories}
               active={activeCategory}
@@ -197,30 +214,34 @@ export default function Home() {
           </aside>
 
           {/* Player + info */}
-          <main className="flex-1 flex flex-col overflow-hidden">
-            <Player />
+          <main className="flex-1 flex flex-col overflow-hidden relative">
+            <div className="relative z-10 shadow-2xl bg-black">
+              <Player />
+            </div>
 
             {/* Now playing bar */}
             {currentChannel && (
-              <div className="flex items-center gap-3 px-4 py-2.5 border-b border-gray-800 bg-gray-900 flex-shrink-0">
-                <div className="w-9 h-9 rounded-lg bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0 text-xs font-semibold text-gray-400">
+              <div className="relative z-20 flex items-center gap-4 px-6 py-4 glass-panel border-y border-white/10 flex-shrink-0">
+                <div className="w-12 h-12 rounded-xl bg-black/50 p-1 flex items-center justify-center overflow-hidden flex-shrink-0 text-sm font-bold text-gray-400 shadow-inner ring-1 ring-white/10">
                   {currentChannel.logo
-                    ? <img src={currentChannel.logo} alt="" className="w-full h-full object-contain" onError={e => { e.currentTarget.style.display = 'none'; }} />
+                    ? <img src={currentChannel.logo} alt="" className="w-full h-full object-contain drop-shadow" onError={e => { e.currentTarget.style.display = 'none'; }} />
                     : initials}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-gray-100 truncate">{currentChannel.name}</p>
-                  <p className="text-xs text-gray-500 flex items-center gap-1.5">
-                    <span className="inline-block px-1.5 py-0.5 rounded text-red-300 text-xs font-bold animate-pulse" style={{ background: 'rgba(220,38,38,0.2)' }}>LIVE</span>
-                    {currentChannel.group}
+                  <p className="text-lg font-bold text-white truncate drop-shadow-md tracking-tight">{currentChannel.name}</p>
+                  <p className="text-sm text-gray-400 flex items-center gap-2 mt-0.5 font-medium uppercase tracking-wider">
+                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-red-100 text-xs font-bold animate-pulse" style={{ background: 'linear-gradient(90deg, #ef4444, #dc2626)', boxShadow: '0 0 10px rgba(239,68,68,0.5)' }}>
+                      <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" /> LIVE
+                    </span>
+                    <span className="opacity-75">{currentChannel.group}</span>
                     {source === 'bd' && (
-                      <span className="px-1.5 py-0.5 rounded text-xs font-bold" style={{ background: 'rgba(34,197,94,0.15)', color: '#34d399' }}>BD LIVE</span>
+                      <span className="px-2 py-0.5 rounded-md text-xs font-bold shadow-sm" style={{ background: 'rgba(34,197,94,0.2)', color: '#34d399', border: '1px solid rgba(34,197,94,0.3)' }}>BD LIVE</span>
                     )}
                     {source === 'biostar' && (
-                      <span className="px-1.5 py-0.5 rounded text-xs font-bold" style={{ background: 'rgba(108,99,255,0.2)', color: '#a78bfa' }}>BIOSTAR</span>
+                      <span className="px-2 py-0.5 rounded-md text-xs font-bold shadow-sm" style={{ background: 'rgba(168,85,247,0.2)', color: '#d8b4fe', border: '1px solid rgba(168,85,247,0.3)' }}>BIOSTAR</span>
                     )}
                     {source === 'hexa' && (
-                      <span className="px-1.5 py-0.5 rounded text-xs font-bold" style={{ background: 'rgba(251,146,60,0.2)', color: '#fb923c' }}>HEXA PRO</span>
+                      <span className="px-2 py-0.5 rounded-md text-xs font-bold shadow-sm" style={{ background: 'rgba(251,146,60,0.2)', color: '#fdba74', border: '1px solid rgba(251,146,60,0.3)' }}>HEXA PRO</span>
                     )}
                   </p>
                 </div>
@@ -228,35 +249,43 @@ export default function Home() {
             )}
 
             {/* Info panel */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            <div className="relative z-10 flex-1 overflow-y-auto p-6 space-y-8 bg-gradient-to-b from-transparent to-black/60">
               {/* Stats */}
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-3 gap-4">
                 {[
-                  { label: 'Channels', val: channels.length },
-                  { label: 'Categories', val: categories.length },
-                  { label: 'Favorites', val: favorites.length },
+                  { label: 'Channels', val: channels.length, color: 'from-purple-500/20 to-pink-500/20' },
+                  { label: 'Categories', val: categories.length, color: 'from-blue-500/20 to-cyan-500/20' },
+                  { label: 'Favorites', val: favorites.length, color: 'from-yellow-500/20 to-orange-500/20' },
                 ].map(s => (
-                  <div key={s.label} className="rounded-lg p-3 border border-gray-800 bg-gray-900">
-                    <p className="text-xs text-gray-500 uppercase tracking-wide">{s.label}</p>
-                    <p className="text-xl font-bold text-gray-100 mt-0.5">{s.val}</p>
+                  <div key={s.label} className={`rounded-2xl p-5 border border-white/10 glass-panel bg-gradient-to-br ${s.color} hover:-translate-y-1 hover:shadow-xl hover:border-white/20 transition-all duration-300`}>
+                    <p className="text-xs text-white/50 font-bold uppercase tracking-widest">{s.label}</p>
+                    <p className="text-3xl font-black text-white mt-1 drop-shadow-lg">{s.val}</p>
                   </div>
                 ))}
               </div>
 
               {/* Recently watched */}
               {recentlyWatched.length > 0 && (
-                <div>
-                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Recently Watched</p>
-                  <div className="space-y-1.5">
+                <div className="pt-2">
+                  <p className="text-xs font-bold text-white/50 uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <span className="w-4 h-0.5 bg-white/20 rounded-full"></span>
+                    Recently Watched
+                    <span className="flex-1 h-0.5 bg-gradient-to-r from-white/20 to-transparent rounded-full"></span>
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                     {recentlyWatched.map((ch, i) => (
                       <button
-                        key={ch.url}
+                        key={ch.url + i}
                         onClick={() => { setCurrentChannel(ch); addToRecent(ch); }}
-                        className="w-full flex items-center gap-3 px-3 py-2 rounded-lg bg-gray-900 border border-gray-800 hover:border-gray-700 transition-colors text-left"
+                        className="group w-full flex items-center gap-4 px-4 py-3 rounded-xl glass-panel hover:bg-white/10 hover:-translate-y-1 hover:shadow-lg hover:border-white/20 transition-all duration-300 text-left border border-white/5"
                       >
-                        <span className="text-xs text-gray-600 w-4">{i + 1}</span>
-                        <span className="text-sm text-gray-300 flex-1 truncate">{ch.name}</span>
-                        <span className="text-xs text-gray-600">{ch.group}</span>
+                        <div className="w-8 h-8 rounded bg-black/40 flex items-center justify-center p-0.5 shadow-inner">
+                            {ch.logo ? <img src={ch.logo} className="w-full h-full object-contain" alt="" /> : <span className="text-xs font-bold text-gray-500">{i+1}</span>}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <span className="block text-sm font-bold text-gray-200 truncate group-hover:text-white transition-colors">{ch.name}</span>
+                          <span className="block text-xs font-medium text-gray-500 uppercase tracking-wider">{ch.group}</span>
+                        </div>
                       </button>
                     ))}
                   </div>
@@ -264,8 +293,8 @@ export default function Home() {
               )}
 
               {/* Legal notice */}
-              <p className="text-xs text-gray-700 pt-2 border-t border-gray-900">
-                StreamFlow aggregates publicly available IPTV streams. Ensure compliance with your local streaming and copyright laws before use.
+              <p className="text-xs font-medium text-gray-600 pt-6 border-t border-white/5 mt-auto pb-4">
+                <span className="text-white/40 font-bold">Disclaimer:</span> StreamFlow aggregates publicly available IPTV streams. Ensure compliance with your local streaming and copyright laws before use. No streams are hosted on this infrastructure.
               </p>
             </div>
           </main>
