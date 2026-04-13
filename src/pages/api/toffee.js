@@ -60,9 +60,9 @@ export default async function handler(req, res) {
             else line += '?' + decodeURIComponent(cookie);
           }
 
-          // We purposefully let the browser handle video chunks directly to prevent your Vercel bandwidth from exploding!
-          // Almost all CDNs only enforce User-Agent on the main M3U8 file request. 
-          lines[i] = line;
+          // MUST route video chunks strictly through proxy too, as Toffee checks User-Agent on binary TS chunks too!
+          const proxyUrl = `/api/toffee?url=${encodeURIComponent(line)}${cookie ? '&cookie=' + encodeURIComponent(cookie) : ''}`;
+          lines[i] = proxyUrl;
         }
       }
 
