@@ -9,6 +9,7 @@ import dynamic from 'next/dynamic';
 import Head from 'next/head';
 import { usePlaylist } from '../hooks/usePlaylist';
 import { useBiostar } from '../hooks/useBiostar';
+import { useTSports } from '../hooks/useTSports';
 import { useStore } from '../store/useStore';
 import CategoryFilter from '../components/CategoryFilter';
 import SearchBar from '../components/SearchBar';
@@ -23,6 +24,7 @@ const ChannelList = dynamic(() => import('../components/ChannelList'), { ssr: fa
 export default function Home() {
   const { channels: iptvChannels, categories: iptvCategories, loading: iptvLoading, error: iptvError, status } = usePlaylist();
   const { channels: biostarChannels, categories: biostarCategories, loading: biostarLoading, error: biostarError } = useBiostar();
+  const { channels: tSportsChannels, categories: tSportsCategories, loading: tSportsLoading, error: tSportsError } = useTSports();
 
   const {
     currentChannel, favorites, recentlyWatched,
@@ -66,18 +68,22 @@ export default function Home() {
   const channels   = source === 'biostar' ? biostarChannels
                    : source === 'bd'      ? BD_CHANNELS
                    : source === 'hexa'    ? HEXA_CHANNELS
+                   : source === 'tsports' ? tSportsChannels
                    : iptvChannels;
   const categories = source === 'biostar' ? biostarCategories
                    : source === 'bd'      ? bdCategories
                    : source === 'hexa'    ? hexaCategories
+                   : source === 'tsports' ? tSportsCategories
                    : iptvCategories;
   const loading    = source === 'biostar' ? biostarLoading
                    : source === 'bd'      ? false
                    : source === 'hexa'    ? false
+                   : source === 'tsports' ? tSportsLoading
                    : iptvLoading;
   const error      = source === 'biostar' ? biostarError
                    : source === 'bd'      ? null
                    : source === 'hexa'    ? null
+                   : source === 'tsports' ? tSportsError
                    : iptvError;
 
   // Filtered channels
@@ -99,10 +105,10 @@ export default function Home() {
     ? (currentChannel.name || '?').split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase()
     : '';
 
-  // ── Loading screen (IPTV and Biostar only; BD is static/instant) ──────────
+  // ── Loading screen ──────────
   if (loading && channels.length === 0) {
-    const label = source === 'biostar' ? '⭐ Biostar' : '📺 StreamFlow';
-    const sub   = source === 'biostar' ? 'Loading Biostar channels...' : 'IPTV Web Player';
+    const label = source === 'biostar' ? '⭐ Biostar' : source === 'tsports' ? '🏏 T-Sports' : '📺 StreamFlow';
+    const sub   = source === 'biostar' ? 'Loading Biostar channels...' : source === 'tsports' ? 'Loading Live Sports...' : 'IPTV Web Player';
     return (
       <div className="fixed inset-0 bg-[#030712] flex flex-col items-center justify-center overflow-hidden z-50">
         {/* Animated background blobs for loader */}
@@ -198,6 +204,14 @@ export default function Home() {
           </div>
         )}
 
+        {source === 'tsports' && !error && (
+          <div className="relative z-20 px-6 py-2 border-b border-white/5 flex items-center gap-3 flex-shrink-0 shadow-sm"
+            style={{ background: 'linear-gradient(90deg, rgba(59,130,246,0.15), rgba(14,165,233,0.05))' }}>
+            <span className="text-sm font-bold tracking-wide" style={{ color: '#38bdf8', textShadow: '0 0 10px rgba(56,189,248,0.4)' }}>🏏 T-Sports Auto-Update</span>
+            <span className="text-sm text-gray-400/90 font-medium">— {channels.length} live feeds</span>
+          </div>
+        )}
+
         {/* Main content */}
         <div className="relative z-10 flex flex-1 overflow-hidden">
 
@@ -242,6 +256,9 @@ export default function Home() {
                     )}
                     {source === 'hexa' && (
                       <span className="px-2 py-0.5 rounded-md text-xs font-bold shadow-sm" style={{ background: 'rgba(251,146,60,0.2)', color: '#fdba74', border: '1px solid rgba(251,146,60,0.3)' }}>HEXA PRO</span>
+                    )}
+                    {source === 'tsports' && (
+                      <span className="px-2 py-0.5 rounded-md text-xs font-bold shadow-sm" style={{ background: 'rgba(56,189,248,0.2)', color: '#7dd3fc', border: '1px solid rgba(56,189,248,0.3)' }}>T-SPORTS</span>
                     )}
                   </p>
                 </div>
