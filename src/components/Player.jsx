@@ -31,13 +31,10 @@ export default function Player() {
     }
 
     // Combine Edge-Cache-Cookie to URL query for Toffee channels
+    // Route it strictly through our Server-Side Proxy to bypass User-Agent/CORS blocks!
     let playUrl = currentChannel.url;
     if (currentChannel.cookie) {
-      if (playUrl.includes('?')) {
-        playUrl += '&' + currentChannel.cookie;
-      } else {
-        playUrl += '?' + currentChannel.cookie;
-      }
+      playUrl = `/api/toffee?url=${encodeURIComponent(currentChannel.url)}&cookie=${encodeURIComponent(currentChannel.cookie)}`;
     }
 
     initPlayer(playUrl, currentChannel);
@@ -129,8 +126,7 @@ export default function Player() {
       setRetrying(false);
       let playUrl = currentChannel.url;
       if (currentChannel.cookie) {
-        if (playUrl.includes('?')) playUrl += '&' + currentChannel.cookie;
-        else playUrl += '?' + currentChannel.cookie;
+        playUrl = `/api/toffee?url=${encodeURIComponent(currentChannel.url)}&cookie=${encodeURIComponent(currentChannel.cookie)}`;
       }
       initPlayer(playUrl, currentChannel);
     }, 500);
