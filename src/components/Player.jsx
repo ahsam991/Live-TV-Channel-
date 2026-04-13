@@ -112,20 +112,20 @@ export default function Player() {
   // ── Biostar iframe player ──────────────────────────────────────────────────
   if (isBiostar) {
     return (
-      <div className="relative bg-black w-full" style={{ minHeight: 280, maxHeight: '62vh' }}>
+      <div className="relative bg-black w-full aspect-video sm:h-auto md:max-h-[65vh]">
         <iframe
           key={currentChannel.url}
           src={currentChannel.url}
-          className="w-full block border-0"
-          style={{ height: '62vh', minHeight: 280, background: '#000' }}
+          className="w-full h-full block border-0"
+          style={{ background: '#000' }}
           allow="autoplay; fullscreen; picture-in-picture"
           allowFullScreen
           title={currentChannel.name}
         />
         {/* Biostar badge */}
         <div
-          className="absolute top-2 right-2 px-2 py-0.5 rounded text-xs font-bold text-white"
-          style={{ background: 'linear-gradient(135deg,#6c63ff,#ff6584)', opacity: 0.85 }}
+          className="absolute top-3 right-3 px-3 py-1 rounded text-xs font-bold text-white shadow-lg pointer-events-none"
+          style={{ background: 'linear-gradient(135deg,#6c63ff,#ff6584)', opacity: 0.9 }}
         >
           BIOSTAR
         </div>
@@ -135,11 +135,11 @@ export default function Player() {
 
   // ── HLS video player ───────────────────────────────────────────────────────
   return (
-    <div className="relative bg-black w-full" style={{ minHeight: 280, maxHeight: '62vh' }}>
+    <div className="relative bg-black w-full aspect-video sm:h-auto md:max-h-[65vh] flex items-center justify-center">
       <video
         ref={videoRef}
-        className="w-full block"
-        style={{ maxHeight: '62vh', objectFit: 'contain', background: '#000' }}
+        className="w-full h-full block"
+        style={{ objectFit: 'contain', background: '#000' }}
         controls
         autoPlay
         playsInline

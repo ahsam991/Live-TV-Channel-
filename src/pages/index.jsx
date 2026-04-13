@@ -146,22 +146,34 @@ export default function Home() {
         </div>
 
         {/* Header */}
-        <header className="relative z-20 flex items-center gap-4 px-6 py-3 border-b border-white/5 glass-panel flex-shrink-0 shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
-          <div className="flex items-center gap-3 text-lg font-extrabold tracking-tight flex-shrink-0">
-            <span className="w-9 h-9 rounded-xl flex items-center justify-center text-lg shadow-[0_0_15px_rgba(168,85,247,0.5)] bg-gradient-to-br from-purple-500 to-pink-500">
-              <span className="drop-shadow-md">📺</span>
-            </span>
-            <span className="text-gradient">StreamFlow</span>
+        <header className="relative z-20 flex flex-wrap md:flex-nowrap items-center gap-3 md:gap-4 px-4 md:px-6 py-2 md:py-3 border-b border-white/5 glass-panel flex-shrink-0 shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
+          <div className="flex items-center gap-2 md:gap-3 text-base md:text-lg font-extrabold tracking-tight flex-shrink-0 w-full md:w-auto justify-between md:justify-start">
+            <div className="flex items-center gap-2 md:gap-3">
+              <span className="w-8 h-8 md:w-9 md:h-9 rounded-xl flex items-center justify-center text-sm md:text-lg shadow-[0_0_15px_rgba(168,85,247,0.5)] bg-gradient-to-br from-purple-500 to-pink-500">
+                <span className="drop-shadow-md">📺</span>
+              </span>
+              <span className="text-gradient">StreamFlow</span>
+            </div>
+            
+            {/* Quick mobile theme toggle */}
+            <button
+              onClick={toggleTheme}
+              className="md:hidden w-8 h-8 rounded-full glass-panel flex items-center justify-center shadow-sm"
+            >
+              {theme === 'dark' ? '☀️' : '🌙'}
+            </button>
           </div>
 
-          {/* Source switcher */}
-          <div className="ml-4">
+          {/* Source switcher (scrollable on mobile) */}
+          <div className="w-full md:w-auto overflow-x-auto scrollbar-hide py-1 md:py-0 md:ml-4">
             <SourceSwitcher source={source} onSwitch={setSource} />
           </div>
 
-          <SearchBar value={search} onChange={setSearch} />
+          <div className="hidden md:block w-full md:w-auto">
+            <SearchBar value={search} onChange={setSearch} />
+          </div>
 
-          <div className="flex items-center gap-3 ml-auto text-sm text-gray-500 flex-shrink-0 font-medium">
+          <div className="hidden md:flex items-center gap-3 ml-auto text-sm text-gray-500 flex-shrink-0 font-medium">
             <span className="bg-white/5 px-3 py-1 rounded-full border border-white/10 shadow-inner">{filtered.length} CH</span>
             <button
               onClick={toggleTheme}
@@ -172,6 +184,14 @@ export default function Home() {
             </button>
           </div>
         </header>
+
+        {/* Mobile Search Bar padding row */}
+        <div className="md:hidden px-4 py-2 border-b border-white/5 glass-panel z-10 flex gap-2 items-center justify-between">
+            <div className="flex-1">
+                <SearchBar value={search} onChange={setSearch} />
+            </div>
+            <span className="bg-white/5 px-3 py-1 rounded-full border border-white/10 shadow-inner text-xs text-gray-500 flex-shrink-0 font-bold">{filtered.length} CH</span>
+        </div>
 
         {/* Error / info banner */}
         {error && (
@@ -213,39 +233,27 @@ export default function Home() {
         )}
 
         {/* Main content */}
-        <div className="relative z-10 flex flex-1 overflow-hidden">
+        <div className="relative z-10 flex flex-col lg:flex-row flex-1 overflow-hidden">
 
-          {/* Sidebar */}
-          <aside className="w-80 flex flex-col border-r border-white/5 bg-black/40 backdrop-blur-xl flex-shrink-0 shadow-[4px_0_24px_rgba(0,0,0,0.3)]">
-            <CategoryFilter
-              categories={categories}
-              active={activeCategory}
-              onChange={setActiveCategory}
-            />
-            <div className="flex-1 overflow-hidden">
-              <ChannelList channels={filtered} height={listHeight + 200} />
-            </div>
-          </aside>
-
-          {/* Player + info */}
-          <main className="flex-1 flex flex-col overflow-hidden relative">
-            <div className="relative z-10 shadow-2xl bg-black">
+          {/* Player + info (Top on Mobile, Right on Desktop) */}
+          <main className="order-1 lg:order-2 flex-1 flex flex-col overflow-hidden relative border-b lg:border-b-0 border-white/10 min-h-[40vh] lg:min-h-0">
+            <div className="relative z-10 shadow-2xl bg-black flex-shrink-0">
               <Player />
             </div>
 
             {/* Now playing bar */}
             {currentChannel && (
-              <div className="relative z-20 flex items-center gap-4 px-6 py-4 glass-panel border-y border-white/10 flex-shrink-0">
-                <div className="w-12 h-12 rounded-xl bg-black/50 p-1 flex items-center justify-center overflow-hidden flex-shrink-0 text-sm font-bold text-gray-400 shadow-inner ring-1 ring-white/10">
+              <div className="relative z-20 flex items-center gap-3 md:gap-4 px-4 md:px-6 py-3 md:py-4 glass-panel border-y border-white/10 flex-shrink-0">
+                <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-black/50 p-1 flex items-center justify-center overflow-hidden flex-shrink-0 text-xs md:text-sm font-bold text-gray-400 shadow-inner ring-1 ring-white/10">
                   {currentChannel.logo
                     ? <img src={currentChannel.logo} alt="" className="w-full h-full object-contain drop-shadow" onError={e => { e.currentTarget.style.display = 'none'; }} />
                     : initials}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-lg font-bold text-white truncate drop-shadow-md tracking-tight">{currentChannel.name}</p>
-                  <p className="text-sm text-gray-400 flex items-center gap-2 mt-0.5 font-medium uppercase tracking-wider">
-                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-red-100 text-xs font-bold animate-pulse" style={{ background: 'linear-gradient(90deg, #ef4444, #dc2626)', boxShadow: '0 0 10px rgba(239,68,68,0.5)' }}>
-                      <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" /> LIVE
+                  <p className="text-base md:text-lg font-bold text-white truncate drop-shadow-md tracking-tight">{currentChannel.name}</p>
+                  <p className="text-xs md:text-sm text-gray-400 flex flex-wrap items-center gap-1.5 md:gap-2 mt-0.5 font-medium uppercase tracking-wider">
+                    <span className="inline-flex items-center gap-1 md:gap-1.5 px-1.5 py-0.5 rounded-md text-red-100 text-[10px] md:text-xs font-bold animate-pulse" style={{ background: 'linear-gradient(90deg, #ef4444, #dc2626)', boxShadow: '0 0 10px rgba(239,68,68,0.5)' }}>
+                      <span className="w-1 md:w-1.5 h-1 md:h-1.5 rounded-full bg-white animate-ping" /> LIVE
                     </span>
                     <span className="opacity-75">{currentChannel.group}</span>
                     {source === 'bd' && (
@@ -265,8 +273,8 @@ export default function Home() {
               </div>
             )}
 
-            {/* Info panel */}
-            <div className="relative z-10 flex-1 overflow-y-auto p-6 space-y-8 bg-gradient-to-b from-transparent to-black/60">
+            {/* Info panel (Hidden on small mobile screens to save space, visible on tablet+) */}
+            <div className="hidden sm:flex relative z-10 flex-1 overflow-y-auto p-4 lg:p-6 flex-col space-y-6 lg:space-y-8 bg-gradient-to-b from-transparent to-black/60">
               {/* Stats */}
               <div className="grid grid-cols-3 gap-4">
                 {[
@@ -315,6 +323,21 @@ export default function Home() {
               </p>
             </div>
           </main>
+
+          {/* Sidebar (Bottom on Mobile, Left on Desktop) */}
+          <aside className="order-2 lg:order-1 w-full lg:w-80 flex flex-col lg:border-r border-white/5 bg-black/40 backdrop-blur-xl flex-1 lg:flex-shrink-0 shadow-[4px_0_24px_rgba(0,0,0,0.3)] min-h-[40vh]">
+            <CategoryFilter
+              categories={categories}
+              active={activeCategory}
+              onChange={setActiveCategory}
+            />
+            <div className="flex-1 overflow-hidden relative">
+              {/* Force height 100% via AutoSizer in the future, for now rely on client height block */}
+              <div className="absolute inset-0">
+                 <ChannelList channels={filtered} height={typeof window !== 'undefined' && window.innerWidth < 1024 ? listHeight + 400 : listHeight + 200} />
+              </div>
+            </div>
+          </aside>
         </div>
       </div>
     </>
