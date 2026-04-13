@@ -10,6 +10,7 @@ export default function SourceSwitcher({ source, onSwitch }) {
     { id: 'biostar', label: '⭐ Biostar' },
     { id: 'hexa',    label: '🔥 HEXA PRO' },
     { id: 'tsports', label: '🏏 T-Sports' },
+    { id: 'sunplex', label: '☀️ Sunplex' },
   ];
 
   return (

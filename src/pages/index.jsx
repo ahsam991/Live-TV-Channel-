@@ -10,6 +10,7 @@ import Head from 'next/head';
 import { usePlaylist } from '../hooks/usePlaylist';
 import { useBiostar } from '../hooks/useBiostar';
 import { useTSports } from '../hooks/useTSports';
+import { useSunplex } from '../hooks/useSunplex';
 import { useStore } from '../store/useStore';
 import CategoryFilter from '../components/CategoryFilter';
 import SearchBar from '../components/SearchBar';
@@ -25,6 +26,7 @@ export default function Home() {
   const { channels: iptvChannels, categories: iptvCategories, loading: iptvLoading, error: iptvError, status } = usePlaylist();
   const { channels: biostarChannels, categories: biostarCategories, loading: biostarLoading, error: biostarError } = useBiostar();
   const { channels: tSportsChannels, categories: tSportsCategories, loading: tSportsLoading, error: tSportsError } = useTSports();
+  const { channels: sunplexChannels, categories: sunplexCategories, loading: sunplexLoading, error: sunplexError } = useSunplex();
 
   const {
     currentChannel, favorites, recentlyWatched,
@@ -69,21 +71,25 @@ export default function Home() {
                    : source === 'bd'      ? BD_CHANNELS
                    : source === 'hexa'    ? HEXA_CHANNELS
                    : source === 'tsports' ? tSportsChannels
+                   : source === 'sunplex' ? sunplexChannels
                    : iptvChannels;
   const categories = source === 'biostar' ? biostarCategories
                    : source === 'bd'      ? bdCategories
                    : source === 'hexa'    ? hexaCategories
                    : source === 'tsports' ? tSportsCategories
+                   : source === 'sunplex' ? sunplexCategories
                    : iptvCategories;
   const loading    = source === 'biostar' ? biostarLoading
                    : source === 'bd'      ? false
                    : source === 'hexa'    ? false
                    : source === 'tsports' ? tSportsLoading
+                   : source === 'sunplex' ? sunplexLoading
                    : iptvLoading;
   const error      = source === 'biostar' ? biostarError
                    : source === 'bd'      ? null
                    : source === 'hexa'    ? null
                    : source === 'tsports' ? tSportsError
+                   : source === 'sunplex' ? sunplexError
                    : iptvError;
 
   // Filtered channels
@@ -107,8 +113,8 @@ export default function Home() {
 
   // ── Loading screen ──────────
   if (loading && channels.length === 0) {
-    const label = source === 'biostar' ? '⭐ Biostar' : source === 'tsports' ? '🏏 T-Sports' : '📺 StreamFlow';
-    const sub   = source === 'biostar' ? 'Loading Biostar channels...' : source === 'tsports' ? 'Loading Live Sports...' : 'IPTV Web Player';
+    const label = source === 'biostar' ? '⭐ Biostar' : source === 'tsports' ? '🏏 T-Sports' : source === 'sunplex' ? '☀️ Sunplex' : '📺 StreamFlow';
+    const sub   = source === 'biostar' ? 'Loading Biostar channels...' : source === 'tsports' ? 'Loading Live Sports...' : source === 'sunplex' ? 'Loading Sunplex Network...' : 'IPTV Web Player';
     return (
       <div className="fixed inset-0 bg-[#030712] flex flex-col items-center justify-center overflow-hidden z-50">
         {/* Animated background blobs for loader */}
@@ -232,6 +238,14 @@ export default function Home() {
           </div>
         )}
 
+        {source === 'sunplex' && !error && (
+          <div className="relative z-20 px-6 py-2 border-b border-white/5 flex items-center gap-3 flex-shrink-0 shadow-sm"
+            style={{ background: 'linear-gradient(90deg, rgba(234,179,8,0.15), rgba(245,158,11,0.05))' }}>
+            <span className="text-sm font-bold tracking-wide" style={{ color: '#facc15', textShadow: '0 0 10px rgba(250,204,21,0.4)' }}>☀️ Sunplex IPS</span>
+            <span className="text-sm text-gray-400/90 font-medium">— {channels.length} internal feeds extracted</span>
+          </div>
+        )}
+
         {/* Main content */}
         <div className="relative z-10 flex flex-col lg:flex-row flex-1 overflow-hidden">
 
@@ -267,6 +281,9 @@ export default function Home() {
                     )}
                     {source === 'tsports' && (
                       <span className="px-2 py-0.5 rounded-md text-xs font-bold shadow-sm" style={{ background: 'rgba(56,189,248,0.2)', color: '#7dd3fc', border: '1px solid rgba(56,189,248,0.3)' }}>T-SPORTS</span>
+                    )}
+                    {source === 'sunplex' && (
+                      <span className="px-2 py-0.5 rounded-md text-xs font-bold shadow-sm" style={{ background: 'rgba(250,204,21,0.2)', color: '#fef08a', border: '1px solid rgba(250,204,21,0.3)' }}>SUNPLEX</span>
                     )}
                   </p>
                 </div>
