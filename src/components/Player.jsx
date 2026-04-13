@@ -29,7 +29,18 @@ export default function Player() {
       setLoading(false);
       return;
     }
-    initPlayer(currentChannel.url);
+
+    // Combine Edge-Cache-Cookie to URL query for Toffee channels
+    let playUrl = currentChannel.url;
+    if (currentChannel.cookie) {
+      if (playUrl.includes('?')) {
+        playUrl += '&' + currentChannel.cookie;
+      } else {
+        playUrl += '?' + currentChannel.cookie;
+      }
+    }
+
+    initPlayer(playUrl, currentChannel);
     return () => destroyHls();
   }, [currentChannel]);
 
@@ -40,7 +51,7 @@ export default function Player() {
     }
   }
 
-  async function initPlayer(url) {
+  async function initPlayer(url, channelObj = null) {
     const video = videoRef.current;
     if (!video) return;
 
@@ -52,12 +63,23 @@ export default function Player() {
     const Hls = (await import('hls.js')).default;
 
     if (Hls.isSupported()) {
-      const hls = new Hls({
+      const hlsConfig = {
         enableWorker: false,
         lowLatencyMode: true,
         backBufferLength: 30,
         maxLoadingDelay: 10,
-      });
+      };
+
+      // Try appending custom headers if provided (User-Agent might throw warning on strict browsers)
+      if (channelObj && channelObj.userAgent) {
+        hlsConfig.xhrSetup = function(xhr) {
+          try {
+            xhr.setRequestHeader('User-Agent', channelObj.userAgent);
+          } catch(e) { /* ignore forbidden header error */ }
+        };
+      }
+
+      const hls = new Hls(hlsConfig);
       hlsRef.current = hls;
       hls.loadSource(url);
       hls.attachMedia(video);
@@ -105,7 +127,12 @@ export default function Player() {
     setRetrying(true);
     setTimeout(() => {
       setRetrying(false);
-      initPlayer(currentChannel.url);
+      let playUrl = currentChannel.url;
+      if (currentChannel.cookie) {
+        if (playUrl.includes('?')) playUrl += '&' + currentChannel.cookie;
+        else playUrl += '?' + currentChannel.cookie;
+      }
+      initPlayer(playUrl, currentChannel);
     }, 500);
   }
 

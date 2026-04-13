@@ -11,6 +11,7 @@ export default function SourceSwitcher({ source, onSwitch }) {
     { id: 'hexa',    label: '🔥 HEXA PRO' },
     { id: 'tsports', label: '🏏 T-Sports' },
     { id: 'sunplex', label: '☀️ Sunplex' },
+    { id: 'toffee',  label: '🍬 Toffee' },
   ];
 
   return (

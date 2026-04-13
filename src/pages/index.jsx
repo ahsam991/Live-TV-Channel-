@@ -17,10 +17,14 @@ import SearchBar from '../components/SearchBar';
 import SourceSwitcher from '../components/SourceSwitcher';
 import BD_CHANNELS, { getBDCategories } from '../data/bdChannels';
 import HEXA_CHANNELS, { getHexaCategories } from '../data/hexaChannels';
+import { TOFFEE_CHANNELS } from '../data/toffeeChannels';
 
 // Dynamic imports for client-only components
 const Player = dynamic(() => import('../components/Player'), { ssr: false });
 const ChannelList = dynamic(() => import('../components/ChannelList'), { ssr: false });
+
+// Static categories
+const toffeeCategories = [...new Set(TOFFEE_CHANNELS.map(c => c.group))];
 
 export default function Home() {
   const { channels: iptvChannels, categories: iptvCategories, loading: iptvLoading, error: iptvError, status } = usePlaylist();
@@ -70,24 +74,28 @@ export default function Home() {
   const channels   = source === 'biostar' ? biostarChannels
                    : source === 'bd'      ? BD_CHANNELS
                    : source === 'hexa'    ? HEXA_CHANNELS
+                   : source === 'toffee'  ? TOFFEE_CHANNELS
                    : source === 'tsports' ? tSportsChannels
                    : source === 'sunplex' ? sunplexChannels
                    : iptvChannels;
   const categories = source === 'biostar' ? biostarCategories
                    : source === 'bd'      ? bdCategories
                    : source === 'hexa'    ? hexaCategories
+                   : source === 'toffee'  ? toffeeCategories
                    : source === 'tsports' ? tSportsCategories
                    : source === 'sunplex' ? sunplexCategories
                    : iptvCategories;
   const loading    = source === 'biostar' ? biostarLoading
                    : source === 'bd'      ? false
                    : source === 'hexa'    ? false
+                   : source === 'toffee'  ? false
                    : source === 'tsports' ? tSportsLoading
                    : source === 'sunplex' ? sunplexLoading
                    : iptvLoading;
   const error      = source === 'biostar' ? biostarError
                    : source === 'bd'      ? null
                    : source === 'hexa'    ? null
+                   : source === 'toffee'  ? null
                    : source === 'tsports' ? tSportsError
                    : source === 'sunplex' ? sunplexError
                    : iptvError;
@@ -246,6 +254,14 @@ export default function Home() {
           </div>
         )}
 
+        {source === 'toffee' && !error && (
+          <div className="relative z-20 px-6 py-2 border-b border-white/5 flex items-center gap-3 flex-shrink-0 shadow-sm"
+            style={{ background: 'linear-gradient(90deg, rgba(244,114,182,0.15), rgba(219,39,119,0.05))' }}>
+            <span className="text-sm font-bold tracking-wide" style={{ color: '#f472b6', textShadow: '0 0 10px rgba(244,114,182,0.4)' }}>🍬 Toffee Live</span>
+            <span className="text-sm text-gray-400/90 font-medium">— {channels.length} Premium Channels (Signed URLs)</span>
+          </div>
+        )}
+
         {/* Main content */}
         <div className="relative z-10 flex flex-col lg:flex-row flex-1 overflow-hidden">
 
@@ -284,6 +300,9 @@ export default function Home() {
                     )}
                     {source === 'sunplex' && (
                       <span className="px-2 py-0.5 rounded-md text-xs font-bold shadow-sm" style={{ background: 'rgba(250,204,21,0.2)', color: '#fef08a', border: '1px solid rgba(250,204,21,0.3)' }}>SUNPLEX</span>
+                    )}
+                    {source === 'toffee' && (
+                      <span className="px-2 py-0.5 rounded-md text-xs font-bold shadow-sm" style={{ background: 'rgba(244,114,182,0.2)', color: '#fbcfe8', border: '1px solid rgba(244,114,182,0.3)' }}>TOFFEE</span>
                     )}
                   </p>
                 </div>
