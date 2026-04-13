@@ -1,0 +1,181 @@
+/**
+ * Player.jsx
+ * HLS video player with iframe fallback for Biostar embed channels.
+ */
+
+import { useEffect, useRef, useState } from 'react';
+import { useStore } from '../store/useStore';
+
+/** Detect if a URL is a Biostar embed page */
+function isBiostarUrl(url) {
+  return typeof url === 'string' && url.includes('biostar-tv-world.vercel.app');
+}
+
+export default function Player() {
+  const videoRef = useRef(null);
+  const hlsRef = useRef(null);
+  const { currentChannel, setPlayerError, clearPlayerError, playerError } = useStore();
+  const [loading, setLoading] = useState(false);
+  const [retrying, setRetrying] = useState(false);
+
+  const isBiostar = currentChannel && isBiostarUrl(currentChannel.url);
+
+  useEffect(() => {
+    if (!currentChannel) return;
+    if (isBiostarUrl(currentChannel.url)) {
+      // Biostar channels render as iframes — no HLS needed
+      destroyHls();
+      clearPlayerError();
+      setLoading(false);
+      return;
+    }
+    initPlayer(currentChannel.url);
+    return () => destroyHls();
+  }, [currentChannel]);
+
+  function destroyHls() {
+    if (hlsRef.current) {
+      hlsRef.current.destroy();
+      hlsRef.current = null;
+    }
+  }
+
+  async function initPlayer(url) {
+    const video = videoRef.current;
+    if (!video) return;
+
+    destroyHls();
+    clearPlayerError();
+    setLoading(true);
+
+    // Dynamically import hls.js (client-only)
+    const Hls = (await import('hls.js')).default;
+
+    if (Hls.isSupported()) {
+      const hls = new Hls({
+        enableWorker: false,
+        lowLatencyMode: true,
+        backBufferLength: 30,
+        maxLoadingDelay: 10,
+      });
+      hlsRef.current = hls;
+      hls.loadSource(url);
+      hls.attachMedia(video);
+
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        setLoading(false);
+        video.play().catch(() => {});
+      });
+
+      hls.on(Hls.Events.ERROR, (_, data) => {
+        if (data.fatal) {
+          setLoading(false);
+          setPlayerError('Stream failed. The channel may be offline or geo-restricted.');
+        }
+      });
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      // Safari native HLS
+      video.src = url;
+      video.addEventListener('loadedmetadata', () => {
+        setLoading(false);
+        video.play().catch(() => {});
+      }, { once: true });
+      video.addEventListener('error', () => {
+        setLoading(false);
+        setPlayerError('Stream failed to load.');
+      }, { once: true });
+    } else {
+      setLoading(false);
+      setPlayerError('HLS is not supported in this browser.');
+    }
+
+    // Timeout fallback
+    const timeout = setTimeout(() => {
+      if (loading) {
+        setLoading(false);
+        setPlayerError('Stream timed out. Try another channel.');
+      }
+    }, 15000);
+
+    return () => clearTimeout(timeout);
+  }
+
+  function handleRetry() {
+    if (!currentChannel) return;
+    setRetrying(true);
+    setTimeout(() => {
+      setRetrying(false);
+      initPlayer(currentChannel.url);
+    }, 500);
+  }
+
+  // ── Biostar iframe player ──────────────────────────────────────────────────
+  if (isBiostar) {
+    return (
+      <div className="relative bg-black w-full" style={{ minHeight: 280, maxHeight: '62vh' }}>
+        <iframe
+          key={currentChannel.url}
+          src={currentChannel.url}
+          className="w-full block border-0"
+          style={{ height: '62vh', minHeight: 280, background: '#000' }}
+          allow="autoplay; fullscreen; picture-in-picture"
+          allowFullScreen
+          title={currentChannel.name}
+        />
+        {/* Biostar badge */}
+        <div
+          className="absolute top-2 right-2 px-2 py-0.5 rounded text-xs font-bold text-white"
+          style={{ background: 'linear-gradient(135deg,#6c63ff,#ff6584)', opacity: 0.85 }}
+        >
+          BIOSTAR
+        </div>
+      </div>
+    );
+  }
+
+  // ── HLS video player ───────────────────────────────────────────────────────
+  return (
+    <div className="relative bg-black w-full" style={{ minHeight: 280, maxHeight: '62vh' }}>
+      <video
+        ref={videoRef}
+        className="w-full block"
+        style={{ maxHeight: '62vh', objectFit: 'contain', background: '#000' }}
+        controls
+        autoPlay
+        playsInline
+      />
+
+      {/* Empty state */}
+      {!currentChannel && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-80">
+          <div className="text-5xl mb-4">📺</div>
+          <p className="text-gray-400 text-sm">Select a channel to start watching</p>
+        </div>
+      )}
+
+      {/* Loading overlay */}
+      {currentChannel && loading && !playerError && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-80 pointer-events-none">
+          <div className="w-10 h-10 border-4 border-gray-700 border-t-accent rounded-full animate-spin mb-4" style={{ borderTopColor: '#6c63ff' }} />
+          <p className="text-gray-400 text-sm">Loading {currentChannel.name}...</p>
+        </div>
+      )}
+
+      {/* Error overlay */}
+      {playerError && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-85">
+          <div className="text-4xl mb-3">⚠️</div>
+          <p className="text-red-400 text-sm mb-5 text-center px-6">{playerError}</p>
+          <button
+            onClick={handleRetry}
+            disabled={retrying}
+            className="px-5 py-2 rounded-lg text-sm font-semibold text-white transition-opacity"
+            style={{ background: '#6c63ff', opacity: retrying ? 0.6 : 1 }}
+          >
+            {retrying ? 'Retrying...' : 'Retry Stream'}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
