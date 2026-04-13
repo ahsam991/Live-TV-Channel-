@@ -13,6 +13,7 @@ export default function SourceSwitcher({ source, onSwitch }) {
     { id: 'sunplex', label: '☀️ Sunplex' },
     { id: 'toffee',  label: '🍬 Toffee' },
     { id: 'jago',    label: '🎥 Jago BD' },
+    { id: 'ayna',    label: '🪞 Ayna OTT' },
   ];
 
   return (

@@ -14,7 +14,7 @@ function isBiostarUrl(url) {
 export default function Player() {
   const videoRef = useRef(null);
   const hlsRef = useRef(null);
-  const { currentChannel, setPlayerError, clearPlayerError, playerError, useGeoProxy, toggleGeoProxy } = useStore();
+  const { currentChannel, setPlayerError, clearPlayerError, playerError, useGeoProxy, toggleGeoProxy, source } = useStore();
   const [loading, setLoading] = useState(false);
   const [retrying, setRetrying] = useState(false);
 
@@ -37,7 +37,7 @@ export default function Player() {
       playUrl = `/api/toffee?url=${encodeURIComponent(currentChannel.url)}&cookie=${encodeURIComponent(currentChannel.cookie)}`;
     } else if (currentChannel.group === 'JagoBD') {
       playUrl = `/api/jago?url=${encodeURIComponent(currentChannel.url)}`;
-    } else if (useGeoProxy && !playUrl.includes('172.') && !playUrl.includes('localhost') && !playUrl.includes('127.0.0.1')) {
+    } else if (source === 'ayna' || (useGeoProxy && !playUrl.includes('172.') && !playUrl.includes('localhost') && !playUrl.includes('127.0.0.1'))) {
       // Route through generic Cloud proxy to bypass CORS / Geo-blocks
       playUrl = `/api/proxy?url=${encodeURIComponent(currentChannel.url)}`;
     }
@@ -134,7 +134,7 @@ export default function Player() {
         playUrl = `/api/toffee?url=${encodeURIComponent(currentChannel.url)}&cookie=${encodeURIComponent(currentChannel.cookie)}`;
       } else if (currentChannel.group === 'JagoBD') {
         playUrl = `/api/jago?url=${encodeURIComponent(currentChannel.url)}`;
-      } else if (useGeoProxy) {
+      } else if (source === 'ayna' || useGeoProxy) {
         playUrl = `/api/proxy?url=${encodeURIComponent(currentChannel.url)}`;
       }
       initPlayer(playUrl, currentChannel);
