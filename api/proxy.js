@@ -1,7 +1,4 @@
-// Vercel Serverless Function — mirrors src/routes/api.proxy.ts so that
-// `/api/proxy?url=...` works when the app is deployed to Vercel (which does
-// not run the TanStack Start Cloudflare Worker server routes).
-
+// Vercel Serverless Function — mirrors src/routes/api.proxy.ts
 export const config = { runtime: "edge" };
 
 const CORS_HEADERS = {
@@ -9,10 +6,10 @@ const CORS_HEADERS = {
   "Access-Control-Allow-Methods": "GET, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, Range",
   "Access-Control-Expose-Headers": "Content-Length, Content-Range",
-} as const;
+};
 
-function headersForUrl(url: string): Record<string, string> {
-  const base: Record<string, string> = {
+function headersForUrl(url) {
+  const base = {
     "User-Agent":
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36",
     Accept: "*/*",
@@ -35,11 +32,11 @@ function headersForUrl(url: string): Record<string, string> {
   return base;
 }
 
-function toProxyUrl(absoluteUrl: string): string {
+function toProxyUrl(absoluteUrl) {
   return `/api/proxy?url=${encodeURIComponent(absoluteUrl)}`;
 }
 
-export default async function handler(request: Request): Promise<Response> {
+export default async function handler(request) {
   if (request.method === "OPTIONS") {
     return new Response(null, { status: 204, headers: CORS_HEADERS });
   }
@@ -53,7 +50,7 @@ export default async function handler(request: Request): Promise<Response> {
     });
   }
 
-  let targetUrl: URL;
+  let targetUrl;
   try {
     targetUrl = new URL(decodeURIComponent(target));
   } catch {
@@ -69,13 +66,12 @@ export default async function handler(request: Request): Promise<Response> {
     });
   }
 
-  const upstreamHeaders: Record<string, string> = headersForUrl(targetUrl.toString());
+  const upstreamHeaders = headersForUrl(targetUrl.toString());
   const range = request.headers.get("range");
   if (range) upstreamHeaders.Range = range;
 
-  let upstream: Response;
+  let upstream;
   try {
-    // Special handling for IPTVIDN player page to resolve dynamic tokens
     if (targetUrl.hostname === "iptvidn.com" && targetUrl.pathname === "/play.php") {
       const pageRes = await fetch(targetUrl.toString(), {
         headers: {
@@ -90,9 +86,6 @@ export default async function handler(request: Request): Promise<Response> {
       if (!iframeMatch) throw new Error("Could not find iframe in IPTVIDN player page");
 
       let iframeUrl = iframeMatch[1];
-      // Transform embed.html URL to index.m3u8 URL
-      // From: http://IP:PORT/ID/embed.html?token=...
-      // To:   http://IP:PORT/ID/index.m3u8?token=...
       const m3u8Url = iframeUrl.replace("/embed.html", "/index.m3u8");
       targetUrl = new URL(m3u8Url);
     }
@@ -104,7 +97,7 @@ export default async function handler(request: Request): Promise<Response> {
     });
   } catch (err) {
     return new Response(
-      JSON.stringify({ error: "Upstream fetch failed", detail: (err as Error).message }),
+      JSON.stringify({ error: "Upstream fetch failed", detail: err.message }),
       { status: 502, headers: { "Content-Type": "application/json", ...CORS_HEADERS } },
     );
   }
@@ -124,7 +117,7 @@ export default async function handler(request: Request): Promise<Response> {
       const trimmed = line.trim();
       if (!trimmed) continue;
       if (trimmed.startsWith("#")) {
-        lines[i] = line.replace(/URI="([^"]+)"/g, (_m, uri: string) => {
+        lines[i] = line.replace(/URI="([^"]+)"/g, (_m, uri) => {
           const abs = uri.startsWith("http") ? uri : baseUrl + uri;
           return `URI="${toProxyUrl(abs)}"`;
         });
@@ -143,7 +136,7 @@ export default async function handler(request: Request): Promise<Response> {
     });
   }
 
-  const passthroughHeaders: Record<string, string> = {
+  const passthroughHeaders = {
     "Content-Type": contentType || "application/octet-stream",
     ...CORS_HEADERS,
   };
