@@ -38,7 +38,7 @@ function headersForUrl(url: string): Record<string, string> {
 
 /** Make a proxy URL that the browser can hit safely. */
 function toProxyUrl(absoluteUrl: string): string {
-  return `/api/proxy?url=${encodeURIComponent(absoluteUrl)}`;
+  return `/api/stream-proxy?url=${encodeURIComponent(absoluteUrl)}`;
 }
 
 async function handleProxy(request: Request): Promise<Response> {
@@ -162,7 +162,7 @@ async function handleProxy(request: Request): Promise<Response> {
   });
 }
 
-export const Route = createFileRoute("/api/proxy")({
+export const Route = createFileRoute("/api/stream-proxy")({
   server: {
     handlers: {
       OPTIONS: async () => new Response(null, { status: 204, headers: CORS_HEADERS }),

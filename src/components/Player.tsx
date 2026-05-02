@@ -33,7 +33,7 @@ function needsProxy(url: string): boolean {
 function proxify(url: string): string {
   if (typeof window === "undefined") return url;
   if (needsProxy(url) || isMixedContent(url) || url.startsWith("http://")) {
-    return `/api/proxy?url=${encodeURIComponent(url)}`;
+    return `/api/stream-proxy?url=${encodeURIComponent(url)}`;
   }
   return url;
 }

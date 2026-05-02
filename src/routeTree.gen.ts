@@ -15,7 +15,7 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CategoriesRouteImport } from './routes/categories'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ApiProxyRouteImport } from './routes/api.proxy'
+import { Route as ApiStreamProxyRouteImport } from './routes/api.stream-proxy'
 
 const WatchRoute = WatchRouteImport.update({
   id: '/watch',
@@ -47,9 +47,9 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiProxyRoute = ApiProxyRouteImport.update({
-  id: '/api/proxy',
-  path: '/api/proxy',
+const ApiStreamProxyRoute = ApiStreamProxyRouteImport.update({
+  id: '/api/stream-proxy',
+  path: '/api/stream-proxy',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -60,7 +60,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/favorites': typeof FavoritesRoute
   '/watch': typeof WatchRoute
-  '/api/proxy': typeof ApiProxyRoute
+  '/api/stream-proxy': typeof ApiStreamProxyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -69,7 +69,7 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/favorites': typeof FavoritesRoute
   '/watch': typeof WatchRoute
-  '/api/proxy': typeof ApiProxyRoute
+  '/api/stream-proxy': typeof ApiStreamProxyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -79,7 +79,7 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/favorites': typeof FavoritesRoute
   '/watch': typeof WatchRoute
-  '/api/proxy': typeof ApiProxyRoute
+  '/api/stream-proxy': typeof ApiStreamProxyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -90,7 +90,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/favorites'
     | '/watch'
-    | '/api/proxy'
+    | '/api/stream-proxy'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -99,7 +99,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/favorites'
     | '/watch'
-    | '/api/proxy'
+    | '/api/stream-proxy'
   id:
     | '__root__'
     | '/'
@@ -108,7 +108,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/favorites'
     | '/watch'
-    | '/api/proxy'
+    | '/api/stream-proxy'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -118,7 +118,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   FavoritesRoute: typeof FavoritesRoute
   WatchRoute: typeof WatchRoute
-  ApiProxyRoute: typeof ApiProxyRoute
+  ApiStreamProxyRoute: typeof ApiStreamProxyRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -165,11 +165,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/proxy': {
-      id: '/api/proxy'
-      path: '/api/proxy'
-      fullPath: '/api/proxy'
-      preLoaderRoute: typeof ApiProxyRouteImport
+    '/api/stream-proxy': {
+      id: '/api/stream-proxy'
+      path: '/api/stream-proxy'
+      fullPath: '/api/stream-proxy'
+      preLoaderRoute: typeof ApiStreamProxyRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -182,7 +182,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   FavoritesRoute: FavoritesRoute,
   WatchRoute: WatchRoute,
-  ApiProxyRoute: ApiProxyRoute,
+  ApiStreamProxyRoute: ApiStreamProxyRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -33,7 +33,7 @@ function headersForUrl(url) {
 }
 
 function toProxyUrl(absoluteUrl) {
-  return `/api/proxy?url=${encodeURIComponent(absoluteUrl)}`;
+  return `/api/stream-proxy?url=${encodeURIComponent(absoluteUrl)}`;
 }
 
 export default async function handler(request) {

@@ -4,7 +4,7 @@
   "outputDirectory": "dist/client",
   "framework": null,
   "rewrites": [
-    { "source": "/api/proxy", "destination": "/api/proxy" },
+    { "source": "/api/stream-proxy", "destination": "/api/edge" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }
