@@ -1,6 +1,7 @@
 import type { SourceMeta, SourceId } from "./types";
 
 export const SOURCES: SourceMeta[] = [
+  { id: "all", label: "All Channels", emoji: "🌐", description: "Every channel from all sources combined" },
   { id: "bd", label: "BD Live", emoji: "🇧🇩", description: "Bangladeshi TV (digijadoo CDN)" },
   { id: "iptv", label: "Global IPTV", emoji: "📡", description: "Curated international free-to-air channels" },
   { id: "biostar", label: "Biostar", emoji: "⭐", description: "Embedded Biostar player feed" },

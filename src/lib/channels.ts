@@ -40,6 +40,10 @@ const REMOTE_SOURCES: Partial<Record<SourceId, { url: string; type: "m3u" | "jso
 const memCache = new Map<SourceId, Channel[]>();
 
 export function getStaticChannels(source: SourceId): Channel[] | null {
+  if (source === "all") {
+    // Aggregate all static channels into one big list
+    return Object.values(STATIC_CHANNELS).flat();
+  }
   return STATIC_CHANNELS[source] ?? null;
 }
 
